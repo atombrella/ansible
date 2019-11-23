@@ -521,16 +521,10 @@ def get_linux_mounts(module, mntinfo_file="/proc/self/mountinfo"):
     """Gather mount information"""
 
     try:
-        f = open(mntinfo_file)
+        with open(mntinfo_file) as f:
+            lines = map(str.strip, f.readlines())
     except IOError:
-        return
-
-    lines = map(str.strip, f.readlines())
-
-    try:
-        f.close()
-    except IOError:
-        module.fail_json(msg="Cannot close file %s" % mntinfo_file)
+        module.fail_json(msg="Problem handling file %s" % mntinfo_file)
 
     mntinfo = {}
 
@@ -664,7 +658,8 @@ def main():
         if not os.path.exists(os.path.dirname(args['fstab'])):
             os.makedirs(os.path.dirname(args['fstab']))
         try:
-            open(args['fstab'], 'a').close()
+            with open(args['fstab'], 'a') as _:
+                pass
         except PermissionError as e:
             module.fail_json(msg="Failed to open %s due to permission issue" % args['fstab'])
         except Exception as e:
