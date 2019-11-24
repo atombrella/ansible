@@ -1,0 +1,5 @@
+bugfixes:
+  - system_cronvar - use a context manager for file handling.
+  - system_crypttab - use a context manager for file handling.
+  - system_parted - use a context manager for file handling.
+  - system_service - use a context manager for file handling.

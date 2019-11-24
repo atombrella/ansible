@@ -145,9 +145,8 @@ class CronVar(object):
         if self.cron_file:
             # read the cronfile
             try:
-                f = open(self.cron_file, 'r')
-                self.lines = f.read().splitlines()
-                f.close()
+                with open(self.cron_file, 'r') as f:
+                    self.lines = f.read().splitlines()
             except IOError:
                 # cron file does not exist
                 return
@@ -176,15 +175,15 @@ class CronVar(object):
         Write the crontab to the system. Saves all information.
         """
         if backup_file:
-            fileh = open(backup_file, 'w')
+            with open(backup_file, 'w') as fileh:
+                fileh.write(self.render())
         elif self.cron_file:
-            fileh = open(self.cron_file, 'w')
+            with open(self.cron_file, 'w') as fileh:
+                fileh.write(self.render())
         else:
             filed, path = tempfile.mkstemp(prefix='crontab')
-            fileh = os.fdopen(filed, 'w')
-
-        fileh.write(self.render())
-        fileh.close()
+            with os.fdopen(filed, 'w') as fileh:
+                fileh.write(self.render())
 
         # return if making a backup
         if backup_file:
